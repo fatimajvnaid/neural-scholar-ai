@@ -1,0 +1,392 @@
+{
+  "name": "All in one CV Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there!\nHow can I assist you today?",
+        "options": {
+          "allowedOrigins": "*",
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9b680ff0-02f3-4184-b1ac-2abdd1bbff43",
+      "name": "When chat message received",
+      "webhookId": "6d0bbc64-83c2-4b33-a483-78dda0a55870"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "64263f42-ed7f-4be2-bc2a-338365755c83",
+              "leftValue": "={{ Object.keys($binary).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e4d08d4c-e263-4a27-b72d-da9c74eb60a9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "realragindex",
+          "mode": "list",
+          "cachedResultName": "realragindex"
+        },
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "={{ $sessionId }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -320
+      ],
+      "id": "62111fe8-e9de-43a2-9f49-c504a47befb0",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "b4bTrcsNHQF1MAVT",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "embed-english-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -144
+      ],
+      "id": "c96fc452-f41f-4003-9865-8815881c6fd7",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "lJqHsbkPhEAXl19e",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "84a9638d-c5e9-41a7-96f5-4968a5dde6c6",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        576,
+        0
+      ],
+      "id": "92b8fd5f-8568-4f46-b196-83ecfe28791c",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a CV assistant. The user has already uploaded their CV. You MUST ALWAYS use the 'search_cv' tool to read the document before answering. Do not tell the user you cannot see the file—use the tool to look for it!"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        496,
+        352
+      ],
+      "id": "e0471e91-76ed-444e-807b-32601a8bfa65",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        560
+      ],
+      "id": "00c5a492-4636-4b06-afaf-a3210d95e2c7",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "modelName": "embed-english-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        656,
+        736
+      ],
+      "id": "794c1e3a-896f-43de-8bf6-1f6a4becacaf",
+      "name": "Embeddings Cohere1",
+      "credentials": {
+        "cohereApi": {
+          "id": "lJqHsbkPhEAXl19e",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86c2b64c-7d32-48b4-8dfd-fda28448605d",
+              "name": "output",
+              "value": "I have successfully analyzed your CV! What would you like to know about it?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        -320
+      ],
+      "id": "7a772dfd-7c5c-402b-af63-d0f31c7004af",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen-2.5-72b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        384,
+        560
+      ],
+      "id": "71e744df-90a2-4039-9405-b368134eb76b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "9ggA9HRmeJl2DDKf",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "You MUST use this tool to search the user's uploaded CV. Call this tool whenever the user asks about their skills, experience, or CV.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "realragindex",
+          "mode": "list",
+          "cachedResultName": "realragindex"
+        },
+        "topK": 2,
+        "options": {
+          "pineconeNamespace": "={{ $sessionId }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        560
+      ],
+      "id": "1519aed5-e16b-493e-9ed5-914ea5282cc5",
+      "name": "search_cv",
+      "credentials": {
+        "pineconeApi": {
+          "id": "b4bTrcsNHQF1MAVT",
+          "name": "PineconeApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "search_cv",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_cv": {
+      "ai_vectorStore": [
+        []
+      ],
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "abbd6566-094d-4348-84b9-dfd46fc726e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5ed3f6cb30a2430104ff8f64af2ad719bedadad14b17673998bc9670200c3249"
+  },
+  "id": "nJbXRBZHaYdISHbntZaAT",
+  "tags": []
+}
