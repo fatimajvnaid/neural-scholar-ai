@@ -10,6 +10,8 @@ Unlike traditional static RAG models that rely on pre-loaded documents, this pro
 * **100% Free AI Stack:** Engineered to run entirely on free-tier APIs without hitting rate limits.
 * **Context-Aware Conversation:** Maintains conversational history using Window Buffer Memory for seamless, human-like follow-up questions.
 * **Cyber-Academic Frontend:** A custom-built, responsive HTML/CSS interface featuring glassmorphism, ambient glows, and a floating n8n chat widget.
+  <img width="1784" height="1012" alt="image" src="https://github.com/user-attachments/assets/3a69b065-a8d2-4c41-95f1-12ec25a83193" />
+  <img width="1776" height="1020" alt="image" src="https://github.com/user-attachments/assets/f361af03-f011-46b2-bef2-acfc93d2e5c4" />
 
 ## Tech Stack
 * **Workflow Automation:** [n8n](https://n8n.io/)
